@@ -1,0 +1,159 @@
+.guide-tip-container {
+    //position: fixed;
+    //width: 100%;
+    //height: 100%;
+    //background-color: rgba(0,0,0,0.1);
+}
+
+.comp-guide-tip {
+    position: absolute;
+    z-index: 1000;
+    font-size: 12px;
+    color: #1B2433;
+    padding: 8px 0;
+    background-color: bisque;
+    margin-top: 7px;
+    text-align: left;
+    border-radius: 3px;
+    min-width: 200px;
+    box-shadow: -3px -3px 6px -2px rgba(0, 0, 0, 0.2);
+    animation: show-center 0.3s linear, bounce-down 1.5s linear 0.3s infinite;
+
+    .text {
+        margin: 0 8px;
+    }
+
+    .arrow {
+        position: absolute;
+        background-color: bisque;
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        box-shadow: -3px -3px 6px -2px rgba(0, 0, 0, 0.2);
+        border-radius: 2px;
+        z-index: -1;
+        transform: rotateZ(45deg);
+        top: -5px;
+    }
+
+    .arrow {
+        &-center {
+            left: 50%;
+        }
+        &-left {
+            left: 20px;
+            right: auto;
+        }
+        &-right {
+            left: auto;
+            right: 20px;
+        }
+    }
+
+    .btn-confirm {
+        float: right;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+}
+
+.comp-guide-tip-left {
+    animation: show-left 0.3s linear, bounce-down 1.5s linear 0.3s infinite;
+}
+
+.comp-guide-tip-right {
+    animation: show-right 0.3s linear, bounce-down 1.5s linear 0.3s infinite;
+}
+
+.fade {
+    &-center {
+        animation: fade-center 0.3s linear;
+        animation-fill-mode: forwards;  //动画结束后不再返回第一帧
+    }
+    &-left {
+        animation: fade-left 0.3s linear;
+        animation-fill-mode: forwards;  //动画结束后不再返回第一帧
+    }
+    &-right {
+        animation: fade-right 0.3s linear;
+        animation-fill-mode: forwards;  //动画结束后不再返回第一帧
+    }
+}
+
+@keyframes bounce-down {
+    25% {transform: translateY(-5px);}
+    50%, 100% {transform: translateY(0);}
+    75% {transform: translateY(5px);}
+}
+@keyframes show-center {
+    0% {
+        opacity: 0;
+        transform-origin: 50% 0;
+        transform: scale(0,0);
+    }
+    100% {
+        opacity: 1;
+        transform-origin: 50% 0;
+        transform: scale(1,1);
+    }
+}
+@keyframes show-left {
+    0% {
+        opacity: 0;
+        transform-origin: 0 0;
+        transform: scale(0,0);
+    }
+    100% {
+        opacity: 1;
+        transform-origin: 0 0;
+        transform: scale(1,1);
+    }
+}
+@keyframes show-right {
+    0% {
+        opacity: 0;
+        transform-origin: right 0;
+        transform: scale(0,0);
+    }
+    100% {
+        opacity: 1;
+        transform-origin: right 0;
+        transform: scale(1,1);
+    }
+}
+@keyframes fade-center {
+    0% {
+        opacity: 1;
+        transform-origin: 50% 0;
+        transform: scale(1, 1);
+    }
+    100% {
+        opacity: 0;
+        transform-origin: 50% 0;
+        transform: scale(0, 0);
+    }
+}
+@keyframes fade-left {
+    0% {
+        opacity: 1;
+        transform-origin: 19px 0;
+        transform: scale(1, 1);
+    }
+    100% {
+        opacity: 0;
+        transform-origin: 19px 0;
+        transform: scale(0, 0);
+    }
+}
+@keyframes fade-right {
+    0% {
+        opacity: 1;
+        transform-origin: right 0;
+        transform: scale(1, 1);
+    }
+    100% {
+        opacity: 0;
+        transform-origin: right 0;
+        transform: scale(0, 0);
+    }
+}
