@@ -1,6 +1,8 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import classnames from 'classnames';
+import './index.css';
 
 const DISPLAY_STATUS = {
     SHOW: 'show',      //渐渐显示（有出现动画）
@@ -18,8 +20,8 @@ class GuideTip extends Component {
         className: PropTypes.string,           //自定义class名字，可用于定义类样式
         position: PropTypes.oneOf([
             'bottom',
-            'leftBottom',
-            'rightBottom'
+            'bottomLeft',
+            'bottomRight'
         ]),                                    //组件显示的位置，引导组件一般只显示在目标组件的下方，所以只有三种位置
         arrowPosition: PropTypes.oneOf([
             'center',
@@ -104,6 +106,9 @@ class GuideTip extends Component {
                 break;
             case 'bottomRight':
                 styles.left = left + target.offsetWidth - width;
+                break;
+            default:
+                styles.left = left + target.offsetWidth / 2 - width / 2;
                 break;
         }
         styles = Object.assign({}, styles, style);    //若用户传了style，则覆盖掉计算出来的style
