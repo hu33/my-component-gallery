@@ -162,8 +162,8 @@ function show(props) {
     }
     guideTipContainer = document.createElement('div');
     guideTipContainer.setAttribute('class', 'guide-tip-container');
-    ReactDOM.render(<GuideTip {...props} active={true} />, guideTipContainer);
     document.body.appendChild(guideTipContainer);
+    ReactDOM.render(<GuideTip {...props} active={true} />, guideTipContainer);
     return guideTipContainer;
 }
 
