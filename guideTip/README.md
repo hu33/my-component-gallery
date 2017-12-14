@@ -1,6 +1,30 @@
 ## 带动画的单个引导组件GuideTip
 
+### 说明
 
+组件用React16的portal重写了一下，所以用法也变了，可以直接写在JSX中，但是它渲染的时候又是渲染在另一处DOM上，是不是很神奇？这就是Portal的魅力呀~~传说中的传送门，哈哈哈。
+
+### 新用法
+
+```javascript
+//在你想要render的地方加上该组件，并且可以传children来自己定义里面的内容
+<div className="steps-wrap">
+    <div className="step step1" id="step1">步骤1</div>
+    <GuideTip
+        active={true}
+        text='这是步骤1'
+        parent="#step1"
+        arrowPosition="left"
+        position="bottomLeft"
+    >
+        <div>这是个引导</div>
+    </GuideTip>
+    <div className="step step2" ref="step2">步骤2</div>
+    <div className="step step3" ref="step3">步骤3</div>
+</div>
+```
+
+-----------分割线-----------
 
 ### 说明：
 

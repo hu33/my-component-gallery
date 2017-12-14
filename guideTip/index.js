@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
+import ReactDOM, {createPortal} from 'react-dom';
 import classnames from 'classnames';
 import './index.css';
 
@@ -10,13 +10,10 @@ const DISPLAY_STATUS = {
     FADE: 'fade'       //渐渐消失（有消失动画）
 };
 
-let guideTipContainer = null;
-
 class GuideTip extends Component {
     static propTypes = {
         active: PropTypes.bool.isRequired,     //引导组件的唯一标识
-        text: PropTypes.string.isRequired,     //引导组件的文案内容
-        style: React.CSSProperties,            //自定义样式，可覆盖掉组件自身定义的样式
+        style: PropTypes.object,            //自定义样式，可覆盖掉组件自身定义的样式
         className: PropTypes.string,           //自定义class名字，可用于定义类样式
         position: PropTypes.oneOf([
             'bottom',
@@ -35,7 +32,6 @@ class GuideTip extends Component {
 
     static defaultProps = {
         active: false,
-        text: '',
         position: 'bottom',
         arrowPosition: 'center',
         confirmText: '知道啦',
@@ -49,6 +45,12 @@ class GuideTip extends Component {
 
     constructor(props) {
         super(props);
+
+        const doc = window.document;
+        this.node = doc.createElement('div');
+        doc.body.appendChild(this.node);
+        this.closeTimer = null;
+
         this.state = {
             status: DISPLAY_STATUS.HIDE,    //默认为隐藏状态
         }
@@ -57,7 +59,7 @@ class GuideTip extends Component {
     componentWillMount() {
         if (this.props.active) {
             this.setState({
-               status: DISPLAY_STATUS.SHOW
+                status: DISPLAY_STATUS.SHOW
             });
         }
     }
@@ -66,6 +68,10 @@ class GuideTip extends Component {
         if (this.state.status === DISPLAY_STATUS.SHOW) {
             this.getStyle();
         }
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.closeTimer);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -79,17 +85,18 @@ class GuideTip extends Component {
 
     componentDidUpdate(preProps, preState) {
         //如果reRender为true或从隐藏变为显示就重新计算style
-        if ((this.state.status === DISPLAY_STATUS.SHOW && this.reRender) || (this.state.status === DISPLAY_STATUS.HIDE && preState.status === DISPLAY_STATUS.SHOW)){
-        // if (this.state.status === DISPLAY_STATUS.HIDE && preState.status === DISPLAY_STATUS.SHOW) {
+        if ((this.state.status === DISPLAY_STATUS.SHOW && this.reRender) || (this.state.status === DISPLAY_STATUS.HIDE && preState.status === DISPLAY_STATUS.SHOW)) {
+            // if (this.state.status === DISPLAY_STATUS.HIDE && preState.status === DISPLAY_STATUS.SHOW) {
             this.getStyle();
         }
     }
 
     getStyle = () => {
-        let {position, style, target} = this.props;
+        let {position, style, parent} = this.props;
         let styles = {};
         const selfDOM = ReactDOM.findDOMNode(this);
         const width = selfDOM.offsetWidth;
+        const target = document.querySelector(parent);
         const tipPosition = target.getBoundingClientRect();
         const scrollY = window.scrollY || window.pageYOffset;
         const scrollX = window.scrollX || window.pageXOffset;
@@ -118,16 +125,24 @@ class GuideTip extends Component {
     };
 
     onConfirm = () => {
-            this.setState({
-                status: DISPLAY_STATUS.FADE
-            });
-        setTimeout(() => {  //设置延时，使消失动画完成后再卸载组件
-            close();
+        this.setState({
+            status: DISPLAY_STATUS.FADE
+        });
+        const _this = this;
+        this.closeTimer = setTimeout(() => {  //设置延时，使消失动画完成后再卸载组件
+            _this.close();
         }, 300);
     };
 
+    close = () => {
+      if (this.node) {
+          this.node.parentNode.removeChild(this.node);
+          this.node = null;
+      }
+    };
+
     render() {
-        let {text, arrowPosition, confirmText, className} = this.props;
+        let {arrowPosition, confirmText, className, children} = this.props;
         const {status, styles} = this.state;
         if (status === DISPLAY_STATUS.HIDE) {
             return null;
@@ -143,43 +158,16 @@ class GuideTip extends Component {
             'arrow': true,
             ['arrow-' + arrowPosition]: arrowPosition
         });
-        return (
+        return createPortal(
             <div className={className} style={styles}>
                 <div className={arrowClassName}></div>
-                <div className="text">{text}</div>
+                <div className="content">{children}</div>
                 { confirmText ? (
                     <span className="btn-confirm" onClick={this.onConfirm}>{confirmText}</span>
                 ) : null}
-            </div>
+            </div>, this.node
         )
     }
 }
 
-function show(props) {
-    if (guideTipContainer) {
-        //已有引导层时，就不再创建
-        return;
-    }
-    guideTipContainer = document.createElement('div');
-    guideTipContainer.setAttribute('class', 'guide-tip-container');
-    document.body.appendChild(guideTipContainer);
-    ReactDOM.render(<GuideTip {...props} active={true} />, guideTipContainer);
-    return guideTipContainer;
-}
-
-function close() {
-    if (guideTipContainer) {
-        try {
-            ReactDOM.unmountComponentAtNode(guideTipContainer);
-            guideTipContainer.parentNode.removeChild(guideTipContainer);
-            guideTipContainer = null;
-        } catch (e) {
-            //catch
-        }
-    }
-}
-
-export default {
-    show,
-    close
-}
+export default GuideTip;
